@@ -1,10 +1,6 @@
-// ============================================================
-//  COWORK AI  →  BEEHIIV  DAILY NEWSPAPER AUTOMATION
-//  Bassam's Newsletter
-// ============================================================
-
 const BEEHIIV_API_KEY = "kJyEvclzdorP6AW5YNMa8uklps7Qf7A2udcyhmunfcrgtKFB5REbcJN80pUWQyGh";
 const PUBLICATION_ID  = "e56de05e-80f8-4038-a362-228ee5a71b51";
+const ANTHROPIC_KEY   = process.env.ANTHROPIC_API_KEY;
 
 async function generateNewspaper() {
   const today = new Date().toLocaleDateString("en-US", {
@@ -14,6 +10,7 @@ async function generateNewspaper() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_KEY,
       "anthropic-version": "2023-06-01"
     },
     body: JSON.stringify({
@@ -32,7 +29,7 @@ Do not add any commentary, preamble, or sign-off — just the newsletter content
     })
   });
   const data = await response.json();
-  if (!response.ok) throw new Error("Cowork AI error: " + JSON.stringify(data));
+  if (!response.ok) throw new Error("AI error: " + JSON.stringify(data));
   console.log("Newspaper generated successfully");
   return data.content[0].text;
 }
