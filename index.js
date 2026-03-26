@@ -1,5 +1,5 @@
 const BEEHIIV_API_KEY = "kJyEvclzdorP6AW5YNMa8uklps7Qf7A2udcyhmunfcrgtKFB5REbcJN80pUWQyGh";
-const PUBLICATION_ID  = "e56de05e-80f8-4038-a362-228ee5a71b51";
+const PUBLICATION_ID  = "pub_e56de05e-80f8-4038-a362-228ee5a71b51";
 const ANTHROPIC_KEY   = process.env.ANTHROPIC_API_KEY;
 
 async function generateNewspaper() {
@@ -18,13 +18,7 @@ async function generateNewspaper() {
       max_tokens: 4000,
       messages: [{
         role: "user",
-        content: `You are the editor of a daily AI newspaper. Today is ${today}.
-Research and write today's edition of the Daily AI Newspaper. Include:
-- Top 3-5 AI news stories from today
-- A brief summary of each story (2-3 sentences)
-- Why it matters to the reader
-Format it cleanly for an email newsletter. Use clear headings for each story.
-Do not add any commentary, preamble, or sign-off — just the newsletter content itself.`
+        content: `You are the editor of a daily AI newspaper. Today is ${today}. Research and write today's edition. Include top 3-5 AI news stories, a brief summary of each, and why it matters. Format cleanly for email. Use clear headings. No preamble or sign-off.`
       }]
     })
   });
@@ -35,18 +29,13 @@ Do not add any commentary, preamble, or sign-off — just the newsletter content
 }
 
 async function sendToBeehiiv(content) {
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "long", day: "numeric", year: "numeric"
-  });
+  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   const subject = "The Daily AI — " + today;
   const createResponse = await fetch(
     "https://api.beehiiv.com/v2/publications/" + PUBLICATION_ID + "/posts",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + BEEHIIV_API_KEY
-      },
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + BEEHIIV_API_KEY },
       body: JSON.stringify({
         subject: subject,
         content_html: "<div style='font-family:sans-serif;max-width:600px;margin:0 auto'>" + content.replace(/\n/g, "<br>") + "</div>",
@@ -64,10 +53,7 @@ async function sendToBeehiiv(content) {
     "https://api.beehiiv.com/v2/publications/" + PUBLICATION_ID + "/posts/" + postId,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + BEEHIIV_API_KEY
-      },
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + BEEHIIV_API_KEY },
       body: JSON.stringify({ status: "confirmed" })
     }
   );
@@ -81,7 +67,7 @@ async function runAutomation() {
   try {
     const newspaper = await generateNewspaper();
     await sendToBeehiiv(newspaper);
-    console.log("Done! Newsletter sent to Bassam's Newsletter subscribers.");
+    console.log("Done! Newsletter sent to Bassam subscribers.");
   } catch (err) {
     console.error("Automation failed:", err.message);
     process.exit(1);
